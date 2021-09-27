@@ -150,9 +150,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,-----------------------------------------------------------------------------------.
  * |  F1  |  F2  |  F3  |  F4  |  F5  |  F6  |  F7  |  F8  |  F9  |  F10 |  F11 |  F12 |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      |      |      |      |      |      |TermOf|TermOn|      |      | Reset|
+ * |      |      |      |      |      |      |      |TermOn|TermOf|      |      | Reset|
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * | Debug|      |Aud cy|Aud on|AudOff|AGnorm|AGswap|Qwerty|Colemk|Dvorak|      |      |
+ * | Debug|      |Aud cy|Aud on|AudOff|      |      |Qwerty|Colemk|Dvorak|      |      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * |      |Voice-|Voice+|Mus on|MusOff|MidiOn|MidOff|      |      |      |      |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
@@ -162,7 +162,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_ADJUST] = LAYOUT_preonic_grid(
   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,
   _______, _______, _______, _______, _______, _______, _______, TERM_ON, TERM_OFF,_______, _______, RESET,
-  DEBUG,   _______, MU_MOD,  AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, QWERTY,  COLEMAK, DVORAK,  _______, _______,
+  DEBUG,   _______, MU_MOD,  AU_ON,   AU_OFF,  _______, _______, QWERTY,  COLEMAK, DVORAK,  _______, _______,
   _______, MUV_DE,  MUV_IN,  MU_ON,   MU_OFF,  MI_ON,   MI_OFF,  _______, _______, _______, _______, _______,
   _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
 ),
@@ -177,7 +177,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * |      |      |      |      |      |      |      |      |      |      |      |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      |      |      |      |             |      | CLK_0| CLK_S| CLK_F|      |
+ * |      |      |      |      |      |             |      |      | CLK_S| CLK_F|      |
  * `-----------------------------------------------------------------------------------'
  */
 [_FUNCTION] = LAYOUT_preonic_grid(
@@ -185,13 +185,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   DYN_REC_STOP, DYN_REC_START1,  DYN_REC_START2,  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,  XXXXXXX,  XXXXXXX,
   XXXXXXX,      XXXXXXX,         XXXXXXX,         XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,  XXXXXXX,  XXXXXXX,
   XXXXXXX,      XXXXXXX,         XXXXXXX,         XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,  XXXXXXX,  XXXXXXX,
-  XXXXXXX,      XXXXXXX,         XXXXXXX,         XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, CLK_OFF, CLK_SLOW, CLK_FAST, XXXXXXX
+  XXXXXXX,      XXXXXXX,         XXXXXXX,         XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, CLK_SLOW, CLK_FAST, XXXXXXX
 )
 
 };
-
-bool fast_click = false;
-bool slow_click = false;
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
@@ -235,8 +232,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           break;
         case CLK_FAST: // Activate autoclicker (Fast)
           if (record->event.pressed) {
-            fast_click = true;
-            while (fast_click) {
+            for (int i = 0; i < 100; i++) {
               tap_code_delay(KC_MS_BTN1, 10);
             }
           }
@@ -244,17 +240,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           break;
         case CLK_SLOW: // Activate autoclicker (Slow)
           if (record->event.pressed) {
-            slow_click = true;
-            while (slow_click) {
-                tap_code_delay(KC_MS_BTN1, 100);
+            for (int i = 0; i < 10; i++) {
+              tap_code_delay(KC_MS_BTN1, 100);
             }
-          }
-          return false;
-          break;
-        case CLK_OFF: // Deactivate autoclicker
-          if (record->event.pressed) {
-            fast_click = false;
-            slow_click = false;
           }
           return false;
           break;
